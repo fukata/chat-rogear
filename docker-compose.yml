@@ -1,0 +1,34 @@
+version: '3'
+volumes:
+  app_bundle_data:
+    driver: local
+  app_node_modules_data:
+    driver: local
+  db_data:
+    driver: local
+services:
+  app:
+    image: fukata/rails:ruby2.6
+    command: bash -c "rm -f /app/tmp/pids/app.pid && ./bin/yarn install && bundle install --jobs=4 --retry=3 && ./bin/rails server -p 8080 -b 0.0.0.0 --pid /app/tmp/pids/app.pid"
+    environment:
+      DB_HOST: "db"
+      TZ: "/usr/share/zoneinfo/Etc/UTC"
+      BUNDLE_PATH: /app/vendor/bundle/
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - app_node_modules_data:/app/node_modules
+      - app_bundle_data:/app/vendor/bundle
+    tty: true
+    stdin_open: true
+  db:
+    image: mysql:8.0.18
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      TZ: "/usr/share/zoneinfo/Etc/UTC"
+    ports:
+      - "13306:3306"
+    command: mysqld --innodb_file_per_table=true --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+    volumes:
+      - db_data:/var/lib/mysql
