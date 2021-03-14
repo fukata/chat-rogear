@@ -3,17 +3,20 @@ import consumer from "./consumer"
 consumer.subscriptions.create("MessageChannel", {
   connected() {
     // Called when the subscription is ready for use on the server
+    console.log('[MessageChannel] connected');
   },
 
   disconnected() {
     // Called when the subscription has been terminated by the server
+    console.log('[MessageChannel] disconnected');
   },
 
   received(data) {
-    const html = `<p>${data.content.text}</p>`;
+    console.log('[MessageChannel] received. data=%o', data);
     const messages = document.getElementById('messages');
     const newMessage = document.getElementById('message_text');
-    messages.insertAdjacentHTML('afterbegin', html);
+    const html = `<p>${data.content.content}</p>`;
+    messages.insertAdjacentHTML('beforeend', html);
     newMessage.value='';
   }
 });
