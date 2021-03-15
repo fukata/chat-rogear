@@ -15,8 +15,28 @@ consumer.subscriptions.create("MessageChannel", {
     console.log('[MessageChannel] received. data=%o', data);
     const messages = document.getElementById('messages');
     const newMessage = document.getElementById('message_text');
-    const html = `<p>${data.content.content}</p>`;
+    const html = `
+    <div class="message">
+      <div class="upper-message">
+        <div class="message-user">
+          ${ data.content.user_name }
+        </div>
+        <div class="message-date">
+          ${ data.content.created_at }
+        </div>
+      </div>
+      <div class="lower-message">
+        <div class="message-content">
+          ${ data.content.content }
+        </div>
+      </div>
+    </div>
+    `;
     messages.insertAdjacentHTML('beforeend', html);
+
+    const bottom = messages.scrollHeight - messages.clientHeight;
+    messages.scroll(0, bottom);
+
     newMessage.value='';
   }
 });
